@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/key.json
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:/key.json:ro
+      - .:/usr/src/app
+    command: ["uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "8080"]
