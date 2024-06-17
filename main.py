@@ -1,3 +1,4 @@
+from google.auth import default
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 import os
 import aiofiles
@@ -10,13 +11,18 @@ import pytz
 # fast app
 app = FastAPI()
 # 認証情報の設定
+
 SCOPES = ['https://www.googleapis.com/auth/drive.file']
-SERVICE_ACCOUNT_FILE = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
 
 
-credentials = service_account.Credentials.from_service_account_file(
-    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-drive_service = build('drive', 'v3', credentials=credentials)
+def get_drive_service():
+    """Google Drive API のサービスオブジェクトを取得する"""
+
+    creds, _ = default(scopes=SCOPES)
+    return build('drive', 'v3', credentials=creds)
+
+
+drive_service = get_drive_service()
 
 
 # client websockets list
