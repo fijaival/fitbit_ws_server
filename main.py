@@ -69,7 +69,7 @@ async def save_to_drive(data: str):
         await temp_file.write(data)
         temp_file_path = temp_file.name
     tokyo_tz = pytz.timezone('Asia/Tokyo')
-    current_time = datetime.now(tokyo_tz).strftime("%y_%m_%d_%H_%M")
+    current_time = datetime.now(tokyo_tz).strftime("%y%m%d-%H%M")
     file_name = f"{current_time}.csv"
 
     folder_id = "1LsY_gS5nL9XBXMof6RXHyWU1O55TbMF1"
