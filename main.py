@@ -81,12 +81,11 @@ async def websocket_endpoint(websocket: WebSocket):
                 })
             elif data_dict["data_type"] == "heart_rate":
                 data_defaults["heart_rate"] = data_dict["data"]["heartRate"]
-            elif data_dict["data_type"] == "rpe":
+            elif data_dict["data_type"] == "fatigue":
                 data_defaults["rpe"] = data_dict["data"]["rpe"]
 
             for field in fields:
                 csv_data[field].append(data_defaults[field])
-
     except WebSocketDisconnect:
         clients.remove(websocket)
 
