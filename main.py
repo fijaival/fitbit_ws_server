@@ -51,12 +51,12 @@ async def websocket_endpoint(websocket: WebSocket):
             # 各データタイプごとの値を設定
             if data_dict["data_type"] == "accelerometer":
                 for data in data_dict["data"]:
-                    csv_data["x"].append(data["x"])
-                    csv_data["y"].append(data["y"])
-                    csv_data["z"].append(data["z"])
+                    csv_data["x"].append(data[0])
+                    csv_data["y"].append(data[1])
+                    csv_data["z"].append(data[2])
                     csv_data["heart_rate"].append(None)
                     csv_data["rpe"].append(None)
-                    csv_data["timestamp"].append(data["timestamp"])
+                    csv_data["timestamp"].append(data[3])
                     csv_data["data_type"].append(data_dict["data_type"])
                 continue
             elif data_dict["data_type"] == "heart_rate":
