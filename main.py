@@ -26,26 +26,6 @@ def get_drive_service():
 
 drive_service = get_drive_service()
 
-
-# client websockets list
-clients = []
-
-# notify to all clients
-
-
-async def notify(msg: str):
-    for websocket in clients:
-        await websocket.send_text(msg)
-
-# notification generator
-
-
-async def notification_generator():
-    while True:
-        msg = yield
-        await notify(msg)
-notification = notification_generator()
-
 # websocket endpoint
 
 
@@ -53,16 +33,12 @@ notification = notification_generator()
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     csv_data = {"timestamp": [], "data_type": [], "heart_rate": [], "x": [], "y": [], "z": [], "rpe": []}
-    clients.append(websocket)
     try:
         while True:
             data = await websocket.receive_text()
 
-            await notification.asend(data)
             data_dict = json.loads(data)
 
-            csv_data["timestamp"].append(data_dict["timestamp"])
-            csv_data["data_type"].append(data_dict["data_type"])
             if data_dict["data_type"] == "finish":
                 await save_to_drive(csv_data)  # Google Driveに保存
                 csv_data = {"timestamp": [], "data_type": [], "heart_rate": [], "x": [], "y": [], "z": [], "rpe": []}
@@ -74,22 +50,28 @@ async def websocket_endpoint(websocket: WebSocket):
 
             # 各データタイプごとの値を設定
             if data_dict["data_type"] == "accelerometer":
-                data_defaults.update({
-                    "x": data_dict["data"]["x"],
-                    "y": data_dict["data"]["y"],
-                    "z": data_dict["data"]["z"]
-                })
+                for data in data_dict["data"]:
+                    csv_data["x"].append(data["x"])
+                    csv_data["y"].append(data["y"])
+                    csv_data["z"].append(data["z"])
+                    csv_data["heart_rate"].append(None)
+                    csv_data["rpe"].append(None)
+                    csv_data["timestamp"].append(data["timestamp"])
+                    csv_data["data_type"].append(data_dict["data_type"])
+                continue
             elif data_dict["data_type"] == "heart_rate":
                 data_defaults["heart_rate"] = data_dict["data"]["heartRate"]
             elif data_dict["data_type"] == "fatigue":
                 data_defaults["rpe"] = data_dict["data"]["rpe"]
+            csv_data["timestamp"].append(data_dict["timestamp"])
+            csv_data["data_type"].append(data_dict["data_type"])
+        
 
             for field in fields:
                 csv_data[field].append(data_defaults[field])
-    except WebSocketDisconnect:
-        clients.remove(websocket)
+    except WebSocketDisconnect as e:
+        print(f"websocketの接続が切断されました: {e}")
 
-# startup (preparing notification generator)
 
 # CSVデータをGoogle Driveに保存する関数
 
@@ -121,8 +103,3 @@ async def save_to_drive(csv_data: dict):
     ).execute()
 
     os.remove(temp_file_path)
-
-
-@app.on_event("startup")
-async def startup():
-    await notification.asend(None)
