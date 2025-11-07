@@ -69,6 +69,11 @@ async def websocket_endpoint(websocket: WebSocket):
 
             for field in fields:
                 csv_data[field].append(data_defaults[field])
+
+            # rpeデータが来たら逐一保存
+            if data_dict["data_type"] == "fatigue":
+                await save_to_drive(csv_data)  # Google Driveに保存
+                csv_data = {"timestamp": [], "data_type": [], "heart_rate": [], "x": [], "y": [], "z": [], "rpe": []}
     except WebSocketDisconnect as e:
         print(f"websocketの接続が切断されました: {e}")
 
