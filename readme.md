@@ -18,9 +18,20 @@ postmanでは呼び出せるがwindowsローカルとはつながらない問題
 ```
 {"data_type":"heart_rate","data":{"heartRate":110},"timestamp":507649138}
 ```
+`rpe`
+```
+{"data_type":"fatigue","data":{"rpe":10},"timestamp":507649138}
+```
+
 `finish`
 ```
 {"data_type":"finish","data":{},"timestamp":"2024-10-13T04:08:12.228Z"}  
+```
+
+
+/ws/android_hr エンドポイントが受け取るデータのサンプル:
+```
+{"heart_rate": 110}
 ```
 
 # deploy
