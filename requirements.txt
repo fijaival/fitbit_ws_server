@@ -8,3 +8,7 @@ aiofiles
 pytz
 aiofiles 
 aiocsv
+joblib
+scipy
+numpy
+scikit-learn

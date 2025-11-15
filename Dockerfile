@@ -1,11 +1,13 @@
-FROM python:3.8-alpine
+FROM python:3.11-slim
 
 WORKDIR /usr/src/app
 
 COPY requirements.txt ./
-RUN apk add --no-cache build-base \
-    && pip install --no-cache-dir --trusted-host pypi.python.org -r requirements.txt \
-    && apk del build-base
+
+RUN apt-get update && apt-get install -y \
+    build-essential gfortran \
+    && pip install --no-cache-dir -r requirements.txt
+
 
 COPY . .
 
