@@ -134,7 +134,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 await run_intervention_logic()
 
                 # 既存の CSV 保存（壊さない）
-                # await save_to_drive(csv_data)
+                await save_to_drive(csv_data)
                 csv_data = {
                     "timestamp": [],
                     "data_type": [],
